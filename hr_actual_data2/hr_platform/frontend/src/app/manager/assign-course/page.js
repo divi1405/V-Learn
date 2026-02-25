@@ -1,11 +1,25 @@
 'use client';
 import '../../globals.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/lib/api';
 import Sidebar from '@/components/Sidebar';
 
 export default function AssignCoursePage() {
+
+    export default function AssignCoursePage() {
+    return (
+        <Suspense fallback={<div className="loading-page"><div className="spinner"></div></div>}>
+            <AssignCourseContent />
+        </Suspense>
+    );
+}
+
+function AssignCourseContent() {
+    // ... the rest of the existing code ...
+
+    
+        
     const router = useRouter();
     const searchParams = useSearchParams();
     const preselectedEmployee = searchParams.get('employee');
@@ -213,3 +227,4 @@ export default function AssignCoursePage() {
         </div>
     );
 }
+
