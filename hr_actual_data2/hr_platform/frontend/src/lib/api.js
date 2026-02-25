@@ -1,11 +1,8 @@
-// Extremely explicit check for Vercel
-const envUrl = process.env.NEXT_PUBLIC_API_URL;
-console.log("----- VERCEL ENV CHECK -----");
-console.log("Raw NEXT_PUBLIC_API_URL is:", envUrl);
-console.log("-----------------------------");
-
-const API_BASE = envUrl || "/api";
-console.log("Final API_BASE being used is:", API_BASE);
+/* 
+   HARDCODED API URL 
+   This bypasses all Vercel Environment Variable issues.
+*/
+const API_BASE = "https://hr-platform-backend.onrender.com/api"; 
 
 class ApiClient {
     constructor() {
@@ -46,8 +43,9 @@ class ApiClient {
         if (this.token) {
             headers['Authorization'] = `Bearer ${this.token}`;
         }
-        console.log(`Sending request to: ${API_BASE}${path}`);
+        // Simplified request logic
         const res = await fetch(`${API_BASE}${path}`, { cache: 'no-store', ...options, headers });
+        
         if (res.status === 401) {
             this.clearToken();
             if (typeof window !== 'undefined') window.location.href = '/login';
