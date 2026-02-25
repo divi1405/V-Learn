@@ -6,8 +6,6 @@ import api from '@/lib/api';
 import Sidebar from '@/components/Sidebar';
 
 export default function AssignCoursePage() {
-
-    export default function AssignCoursePage() {
     return (
         <Suspense fallback={<div className="loading-page"><div className="spinner"></div></div>}>
             <AssignCourseContent />
@@ -16,10 +14,6 @@ export default function AssignCoursePage() {
 }
 
 function AssignCourseContent() {
-    // ... the rest of the existing code ...
-
-    
-        
     const router = useRouter();
     const searchParams = useSearchParams();
     const preselectedEmployee = searchParams.get('employee');
@@ -227,4 +221,3 @@ function AssignCourseContent() {
         </div>
     );
 }
-
