@@ -1,0 +1,37 @@
+VeLearn_Database Columns: ['Type', 'Employee Number', 'Employee Name', 'Curr.Designation', 'Manager Employee Name', 'Curr.Division', 'Curr.Department']
+VeLearn_Database Sample:
+[
+  {
+    "Type": "Full-time employees",
+    "Employee Number": "VA111",
+    "Employee Name": "Nikhil Joshi",
+    "Curr.Designation": "Vice President - Strategy & Planning",
+    "Manager Employee Name": "Rituparan Sharma",
+    "Curr.Division": "Circle Black",
+    "Curr.Department": "Non Tech"
+  },
+  {
+    "Type": "Full-time employees",
+    "Employee Number": "VA116",
+    "Employee Name": "Avinash A Hanumapur",
+    "Curr.Designation": "Senior Software Engineer",
+    "Manager Employee Name": "Nikhil Joshi",
+    "Curr.Division": "Circle Black",
+    "Curr.Department": "Tech"
+  }
+]
+
+Export_37 Columns: ['Emp ID', 'Emp Name', 'Email ID']
+Export_37 Sample:
+[
+  {
+    "Emp ID": "C0025",
+    "Emp Name": "Kaysur Hussain Barbhuiya",
+    "Email ID": "kaysur.barbhuiya@vearc.com"
+  },
+  {
+    "Emp ID": "C0041",
+    "Emp Name": "Maruthi R K",
+    "Email ID": "maruthi.rk@vearc.com"
+  }
+]

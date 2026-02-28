@@ -1,0 +1,11 @@
+[
+  {
+    "type": "int_type",
+    "loc": [
+      "course_id"
+    ],
+    "msg": "Input should be a valid integer",
+    "input": null,
+    "url": "https://errors.pydantic.dev/2.12/v/int_type"
+  }
+]

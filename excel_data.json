@@ -1,0 +1,22 @@
+Columns: ['Type', 'Employee Number', 'Employee Name', 'Curr.Designation', 'Manager Employee Name', 'Curr.Division', 'Curr.Department']
+Sample:
+[
+  {
+    "Type": "Full-time employees",
+    "Employee Number": "VA111",
+    "Employee Name": "Nikhil Joshi",
+    "Curr.Designation": "Vice President - Strategy & Planning",
+    "Manager Employee Name": "Rituparan Sharma",
+    "Curr.Division": "Circle Black",
+    "Curr.Department": "Non Tech"
+  },
+  {
+    "Type": "Full-time employees",
+    "Employee Number": "VA116",
+    "Employee Name": "Avinash A Hanumapur",
+    "Curr.Designation": "Senior Software Engineer",
+    "Manager Employee Name": "Nikhil Joshi",
+    "Curr.Division": "Circle Black",
+    "Curr.Department": "Tech"
+  }
+]
