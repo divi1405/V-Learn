@@ -38,6 +38,7 @@ def enroll(data: EnrollmentCreate, db: Session = Depends(get_db), user: User = D
         user_id=user.id,
         type="enrollment",
         message=f"You've been enrolled in '{course.title}'",
+        course_id=data.course_id,
     )
     db.add(notif)
     db.commit()
@@ -68,6 +69,7 @@ def assign_course(
         user_id=user_id,
         type="assignment",
         message=f"You've been assigned '{course.title}' by {assigner.name}",
+        course_id=course_id,
     )
     db.add(notif)
     db.commit()
@@ -120,9 +122,16 @@ def update_progress(
                     enrollment.status = EnrollmentStatus.COMPLETED
                     if not enrollment.completion_date:
                         enrollment.completion_date = datetime.utcnow()
+                    db.commit()
+                    # Auto-award badges on course completion
+                    try:
+                        from app.routers.badges import check_and_award_badges_for_user
+                        check_and_award_badges_for_user(user.id, db)
+                    except Exception:
+                        pass
                 else:
                     enrollment.status = EnrollmentStatus.IN_PROGRESS
-                db.commit()
+                    db.commit()
 
     return progress
 

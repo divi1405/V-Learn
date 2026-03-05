@@ -2,11 +2,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.models import User
+from app.models import User, UserRole
 from app.schemas import UserOut, UserUpdate, UserCreate
-from app.auth import get_current_user, require_role
+from app.auth import get_current_user, require_role, hash_password
 
 router = APIRouter(prefix="/api/users", tags=["users"])
+
+
+def resolve_role(role_str: str) -> UserRole:
+    """Convert a role string to UserRole enum, defaulting to LEARNER."""
+    if not role_str:
+        return UserRole.LEARNER
+    try:
+        return UserRole(role_str.upper())
+    except (ValueError, KeyError):
+        return UserRole.LEARNER
 
 
 @router.get("/me", response_model=UserOut)
@@ -37,20 +47,21 @@ def create_user(
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    from app.auth import hash_password
     hashed_password = hash_password(data.password)
 
     new_user = User(
         name=data.name,
         email=data.email,
-        employee_number=data.employee_number,
+        employee_number=data.employee_number or f"USR-{db.query(User).count() + 1}",
         password_hash=hashed_password,
-        role=data.role,
+        role=resolve_role(data.role),
         department=data.department,
         designation=data.designation,
         division=data.division,
         type=data.type,
-        manager_id=data.manager_id
+        company_id=data.company_id,
+        manager_id=data.manager_id,
+        is_first_login=True,
     )
     db.add(new_user)
     db.commit()
@@ -65,7 +76,7 @@ def list_users(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    q = db.query(User)
+    q = db.query(User).filter(User.is_active == True)
     if role:
         q = q.filter(User.role == role)
     if department:
@@ -92,10 +103,29 @@ def update_user(
     if not u:
         raise HTTPException(404, "User not found")
     for k, v in data.model_dump(exclude_unset=True).items():
-        setattr(u, k, v)
+        if k == "role" and v is not None:
+            setattr(u, k, resolve_role(v))
+        else:
+            setattr(u, k, v)
     db.commit()
     db.refresh(u)
     return u
+
+
+@router.put("/{user_id}/reset-password")
+def reset_user_password(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_role("admin", "hr_admin")),
+):
+    """Admin endpoint to reset a user's password to Welcome@123."""
+    u = db.query(User).filter(User.id == user_id).first()
+    if not u:
+        raise HTTPException(404, "User not found")
+    u.password_hash = hash_password("Welcome@123")
+    u.is_first_login = True
+    db.commit()
+    return {"detail": f"Password reset for {u.email}. New password: Welcome@123"}
 
 
 @router.delete("/{user_id}")
@@ -107,6 +137,6 @@ def delete_user(
     u = db.query(User).filter(User.id == user_id).first()
     if not u:
         raise HTTPException(404, "User not found")
-    db.delete(u)
+    u.is_active = False
     db.commit()
-    return {"detail": "Deleted"}
+    return {"detail": "Deactivated"}

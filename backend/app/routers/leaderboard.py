@@ -12,8 +12,8 @@ router = APIRouter(prefix="/api/leaderboard", tags=["leaderboard"])
 @router.get("", response_model=list[LeaderboardEntry])
 def get_leaderboard(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     """Get leaderboard ranked by points (courses completed * 100 + badges * 50 + avg_score)"""
-    # Base users
-    users = db.query(User).filter(User.role.in_([UserRole.LEARNER])).all()
+    # Base users (Learners and Managers)
+    users = db.query(User).filter(User.role.in_([UserRole.LEARNER, UserRole.MANAGER]), User.is_active == True).all()
 
     entries = []
     for u in users:

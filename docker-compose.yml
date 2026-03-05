@@ -1,45 +1,31 @@
 version: '3.8'
 
-services:
-  db:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: lms_db
-      POSTGRES_USER: lms_user
-      POSTGRES_PASSWORD: lms_password
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U lms_user -d lms_db" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+# The PostgreSQL database is expected to run LOCALLY (not in Docker).
+# Run `scripts/setup-local-db.sh` (or setup-local-db.ps1 on Windows) once to create
+# the user and database, then start this compose stack.
 
+services:
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://lms_user:lms_password@db:5432/lms_db
+      # On Mac/Linux use host.docker.internal; on Linux you may need your LAN IP instead
+      DATABASE_URL: postgresql://lms_user:lms_password@host.docker.internal:5432/lms_db
       JWT_SECRET: super-secret-jwt-key-change-in-production
       CORS_ORIGINS: http://localhost:3000
-    depends_on:
-      db:
-        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./backend/certificates:/app/certificates
       - ./backend/uploads:/app/uploads
+      - "./excel sheets:/app/excel_sheets"
 
-  frontend:
-    build: ./frontend
+  web:
+    build: ./web
     ports:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
     depends_on:
       - backend
-
-volumes:
-  pgdata:

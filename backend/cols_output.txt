@@ -1,0 +1,29 @@
+EXPORT COLS:
+  Emp ID
+  Emp Name
+  Email ID
+
+VELEARN COLS:
+  Type
+  Employee Number
+  Employee Name
+  Curr.Designation
+  Manager Employee Name
+  Curr.Division
+  Curr.Department
+
+EXPORT first 3:
+  EmpID=C0025 | Email=kaysur.barbhuiya@vearc.com | Name=Kaysur Hussain Barbhuiya
+  EmpID=C0041 | Email=maruthi.rk@vearc.com | Name=Maruthi R K
+  EmpID=C0042 | Email=abhyuday.kaushik@vearc.com | Name=Abhyuday Kaushik
+
+VELEARN first 3:
+  EmpNum=VA111 | Name=Nikhil Joshi | Manager=N/A | CompanyID=N/A | Email=N/A
+  EmpNum=VA116 | Name=Avinash A Hanumapur | Manager=N/A | CompanyID=N/A | Email=N/A
+  EmpNum=VA117 | Name=Rakshitha R | Manager=N/A | CompanyID=N/A | Email=N/A
+
+--- Matching Strategy ---
+Common names: 226 out of export=251, velearn=229
+Common emp IDs: 227 out of export=251, velearn=229
+Sample export IDs: ['VA369', 'VA236', 'VA150', 'VA159', 'VA262']
+Sample velearn IDs: ['VA369', 'VA236', 'VA150', 'VA159', 'VA262']

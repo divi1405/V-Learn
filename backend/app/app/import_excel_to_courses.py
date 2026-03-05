@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.models import Course, Module, Lesson, LessonType, LearningPath, PathCourse
 
-EXCEL_PATH = "/app/AI_Adoption_LnD_Resources_v4.xlsx"
+EXCEL_PATH = "/app/excel_sheets/AI_Adoption_LnD_Resources_v4.xlsx"
 
 # If True, create a Learning Path per sheet and add all section-courses to it.
 CREATE_LEARNING_PATHS = False

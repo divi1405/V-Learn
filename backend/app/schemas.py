@@ -25,6 +25,7 @@ class RegisterRequest(BaseModel):
     division: Optional[str] = None
     department: Optional[str] = None
     type: Optional[str] = None
+    company_id: Optional[str] = None
 
 class TokenResponse(BaseModel):
     access_token: str
@@ -43,6 +44,7 @@ class UserCreate(BaseModel):
     division: Optional[str] = None
     department: Optional[str] = None
     type: Optional[str] = None
+    company_id: Optional[str] = None
     manager_id: Optional[int] = None
 class ManagerOut(BaseModel):
     id: int
@@ -66,9 +68,11 @@ class UserOut(BaseModel):
     division: Optional[str] = None
     department: Optional[str] = None
     type: Optional[str] = None
+    company_id: Optional[str] = None
     manager_id: Optional[int] = None
     manager_name: Optional[str] = None
     profile_image: Optional[str] = None
+    is_active: Optional[bool] = True
     is_first_login: Optional[bool] = True
     created_at: Optional[datetime] = None
 
@@ -83,6 +87,7 @@ class UserUpdate(BaseModel):
     department: Optional[str] = None
     type: Optional[str] = None
     manager_id: Optional[int] = None
+    profile_image: Optional[str] = None
 
 
 # --- Course ---
@@ -306,7 +311,7 @@ class EnrollmentCreate(BaseModel):
 class EnrollmentOut(BaseModel):
     id: int
     user_id: int
-    course_id: int
+    course_id: Optional[int] = None
     enrolled_at: Optional[datetime] = None
     status: str
     completion_date: Optional[datetime] = None
@@ -356,6 +361,7 @@ class NotificationOut(BaseModel):
     type: Optional[str] = None
     message: Optional[str] = None
     read: bool
+    course_id: Optional[int] = None
     created_at: Optional[datetime] = None
 
     class Config:

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from datetime import datetime
 from app.database import get_db
-from app.models import Quiz, Question, QuizAttempt, Lesson, LessonProgress, LessonStatus
+from app.models import Quiz, Question, QuizAttempt, Lesson, LessonProgress, LessonStatus, Enrollment, EnrollmentStatus, Module
 from app.schemas import QuizCreate, QuizOut, QuizSubmit, QuizAttemptOut
 from app.auth import get_current_user, require_role
 from app.models import User
@@ -59,12 +60,10 @@ def submit_quiz(
     if not quiz:
         raise HTTPException(404, "Quiz not found")
 
-    # Check attempt count
+    # Attempts cap removed, count is just for record keeping
     attempts = db.query(QuizAttempt).filter(
         QuizAttempt.user_id == user.id, QuizAttempt.quiz_id == quiz_id
     ).count()
-    if attempts >= quiz.max_attempts:
-        raise HTTPException(400, f"Maximum attempts ({quiz.max_attempts}) reached")
 
     # Grade
     questions = db.query(Question).filter(Question.quiz_id == quiz_id).all()
@@ -102,10 +101,53 @@ def submit_quiz(
                 user_id=user.id, lesson_id=lesson.id, status=LessonStatus.COMPLETED
             )
             db.add(progress)
+        db.flush()
+
+        # Update enrollment progress
+        module = lesson.module
+        course = module.course
+        enrollment = db.query(Enrollment).filter(
+            Enrollment.user_id == user.id, Enrollment.course_id == course.id
+        ).first()
+        if enrollment:
+            total_lessons = sum(len(m.lessons) for m in course.modules)
+            if total_lessons > 0:
+                completed = db.query(LessonProgress).filter(
+                    LessonProgress.user_id == user.id,
+                    LessonProgress.status == LessonStatus.COMPLETED,
+                    LessonProgress.lesson_id.in_([l.id for m in course.modules for l in m.lessons])
+                ).count()
+                enrollment.progress_pct = round((completed / total_lessons) * 100, 1)
+                if completed >= total_lessons or enrollment.progress_pct >= 99.9:
+                    enrollment.status = EnrollmentStatus.COMPLETED
+                    if not enrollment.completion_date:
+                        enrollment.completion_date = datetime.utcnow()
+                    try:
+                        from app.routers.badges import check_and_award_badges_for_user
+                        check_and_award_badges_for_user(user.id, db)
+                    except Exception:
+                        pass
+                else:
+                    enrollment.status = EnrollmentStatus.IN_PROGRESS
 
     db.commit()
     db.refresh(attempt)
     return attempt
+
+
+@router.get("/lesson/{lesson_id}", response_model=QuizOut)
+def get_quiz_for_lesson(
+    lesson_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    if not lesson:
+        raise HTTPException(404, "Lesson not found")
+    quiz = db.query(Quiz).filter(Quiz.lesson_id == lesson_id).first()
+    if not quiz:
+        raise HTTPException(404, "No quiz for this lesson")
+    return quiz
 
 
 @router.get("/{quiz_id}/attempts", response_model=list[QuizAttemptOut])

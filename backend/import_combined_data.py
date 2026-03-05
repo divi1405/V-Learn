@@ -20,8 +20,8 @@ def run_import():
         Base.metadata.create_all(bind=engine)
         print("Recreated database schema.")
 
-        df1 = pd.read_excel('/tmp/VeLearn_Database.xlsx').dropna(how='all')
-        df2 = pd.read_excel('/tmp/export_37.xlsx').dropna(how='all')
+        df1 = pd.read_excel('/app/excel_sheets/VeLearn Database.xlsx').dropna(how='all')
+        df2 = pd.read_excel('/app/excel_sheets/export.xlsx').dropna(how='all')
 
         # Create dictionaries for fast lookup
         emails_by_name = {}

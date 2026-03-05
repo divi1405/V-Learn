@@ -64,9 +64,11 @@ class User(Base):
     division = Column(String(255))
     department = Column(String(100))
     type = Column(String(100))
+    company_id = Column(String(100))
     manager_id = Column(Integer, ForeignKey("managers.id"))
     is_first_login = Column(Boolean, default=True)
     profile_image = Column(Text, nullable=True)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     manager = relationship("Manager", back_populates="direct_reports", foreign_keys=[manager_id])
@@ -305,6 +307,7 @@ class Notification(Base):
     type = Column(String(50))
     message = Column(Text)
     read = Column(Boolean, default=False)
+    course_id = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="notifications")

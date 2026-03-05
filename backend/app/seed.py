@@ -684,3 +684,7 @@ def _do_seed():
     print("   Learner: sarah@company.com / learner123")
 
     db.close()
+
+
+if __name__ == "__main__":
+    seed()
