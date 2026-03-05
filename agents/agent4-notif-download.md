@@ -116,6 +116,7 @@ class DownloadManager {
       this.statusMap.set(lessonId, 'failed');
       throw new Error('Download failed');
     } finally {
+    
       this.activeDownloads.delete(lessonId);
     }
   }
